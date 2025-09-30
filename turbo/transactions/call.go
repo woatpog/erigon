@@ -299,6 +299,7 @@ func NewReusableCaller(
 	engine consensus.EngineReader,
 	stateReader state.StateReader,
 	overrides *ethapi2.StateOverrides,
+	blockOverrides *ethapi2.BlockOverrides,
 	header *types.Header,
 	initialArgs ethapi2.CallArgs,
 	gasCap uint64,
@@ -331,6 +332,9 @@ func NewReusableCaller(
 	}
 
 	blockCtx := NewEVMBlockContext(engine, header, blockNrOrHash.RequireCanonical, tx, headerReader, chainConfig)
+	if blockOverrides != nil {
+		blockOverrides.Override(&blockCtx)
+	}
 	txCtx := core.NewEVMTxContext(msg)
 
 	evm := vm.NewEVM(blockCtx, txCtx, ibs, chainConfig, vm.Config{NoBaseFee: true})
